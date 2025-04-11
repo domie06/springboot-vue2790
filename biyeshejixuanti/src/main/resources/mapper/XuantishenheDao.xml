@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.XuantishenheDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yonghu_id as yonghuId
+        ,a.jiaoshi_id as jiaoshiId
+        ,a.shejitimu_id as shejitimuId
+        ,a.xuantishenhe_types as xuantishenheTypes
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.XuantishenheView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,jiaoshi.jiaoshi_name as jiaoshiName
+        ,jiaoshi.sex_types as sexTypes
+        ,jiaoshi.jiaoshi_id_number as jiaoshiIdNumber
+        ,jiaoshi.jiaoshi_phone as jiaoshiPhone
+        ,jiaoshi.jiaoshi_photo as jiaoshiPhoto
+        ,shejitimu.shejitimu_name as shejitimuName
+        ,shejitimu.jiaoshi_id as jiaoshiId
+        ,shejitimu.shejitimu_types as shejitimuTypes
+        ,shejitimu.insert_time as insertTime
+        ,shejitimu.shejitimu_zancheng as shejitimuZancheng
+        ,shejitimu.shejitimu_fandui as shejitimuFandui
+        ,shejitimu.zhuangtai_types as zhuangtaiTypes
+        ,shejitimu.shejitimu_content as shejitimuContent
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.sex_types as sexTypes
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_photo as yonghuPhoto
+
+        FROM xuantishenhe  a
+        left JOIN jiaoshi jiaoshi ON a.jiaoshi_id = jiaoshi.id
+        left JOIN shejitimu shejitimu ON a.shejitimu_id = shejitimu.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.yonghuId != null">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.jiaoshiId != null">
+                and a.jiaoshi_id = #{params.jiaoshiId}
+            </if>
+            <if test="params.shejitimuId != null">
+                and a.shejitimu_id = #{params.shejitimuId}
+            </if>
+            <if test="params.xuantishenheTypes != null">
+                and a.xuantishenhe_types = #{params.xuantishenheTypes}
+            </if>
+
+            <if test=" params.jiaoshiName != '' and params.jiaoshiName != null and params.jiaoshiName != 'null' ">
+                and jiaoshi.jiaoshi_name like CONCAT('%',#{params.jiaoshiName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and jiaoshi.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.jiaoshiIdNumber != '' and params.jiaoshiIdNumber != null and params.jiaoshiIdNumber != 'null' ">
+                and jiaoshi.jiaoshi_id_number like CONCAT('%',#{params.jiaoshiIdNumber},'%')
+            </if>
+            <if test=" params.jiaoshiPhone != '' and params.jiaoshiPhone != null and params.jiaoshiPhone != 'null' ">
+                and jiaoshi.jiaoshi_phone like CONCAT('%',#{params.jiaoshiPhone},'%')
+            </if>
+            <if test=" params.shejitimuName != '' and params.shejitimuName != null and params.shejitimuName != 'null' ">
+                and shejitimu.shejitimu_name like CONCAT('%',#{params.shejitimuName},'%')
+            </if>
+            <if test="params.jiaoshiId != null">
+                and shejitimu.jiaoshi_id = #{params.jiaoshiId}
+            </if>
+            <if test="params.shejitimuTypes != null">
+                and shejitimu.shejitimu_types = #{params.shejitimuTypes}
+            </if>
+
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(shejitimu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(shejitimu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.shejitimuZanchengStart != null ">
+                <![CDATA[  and shejitimu.shejitimu_zancheng >= #{params.shejitimuZanchengStart}   ]]>
+            </if>
+            <if test="params.shejitimuZanchengEnd != null ">
+                <![CDATA[  and shejitimu.shejitimu_zancheng <= #{params.shejitimuZanchengEnd}   ]]>
+            </if>
+            <if test="params.shejitimuFanduiStart != null ">
+                <![CDATA[  and shejitimu.shejitimu_fandui >= #{params.shejitimuFanduiStart}   ]]>
+            </if>
+            <if test="params.shejitimuFanduiEnd != null ">
+                <![CDATA[  and shejitimu.shejitimu_fandui <= #{params.shejitimuFanduiEnd}   ]]>
+            </if>
+            <if test="params.zhuangtaiTypes != null">
+                and shejitimu.zhuangtai_types = #{params.zhuangtaiTypes}
+            </if>
+
+            <if test=" params.shejitimuContent != '' and params.shejitimuContent != null and params.shejitimuContent != 'null' ">
+                and shejitimu.shejitimu_content like CONCAT('%',#{params.shejitimuContent},'%')
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and yonghu.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
